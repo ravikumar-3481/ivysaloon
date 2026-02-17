@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Menu, Search, ShoppingBag, CalendarCheck } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 const navLinks = [
@@ -8,18 +9,29 @@ const navLinks = [
   { label: "About", href: "#about" },
   { label: "Team", href: "#team" },
   { label: "Pricing", href: "#pricing" },
+  { label: "Feedback", href: "#feedback" },
   { label: "Contact", href: "#contact" },
   { label: "News", href: "#news" },
 ];
 
 const StickyHeader = () => {
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleNav = (href: string) => {
+    if (location.pathname !== "/") {
+      navigate("/" + href);
+    } else {
+      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <header
@@ -39,25 +51,39 @@ const StickyHeader = () => {
             <SheetTitle className="font-heading text-2xl mb-8">Ivy Salon</SheetTitle>
             <nav className="flex flex-col gap-6">
               {navLinks.map((link) => (
-                <a
+                <button
                   key={link.href}
-                  href={link.href}
-                  className="text-lg font-body text-foreground hover:text-accent transition-colors"
+                  onClick={() => handleNav(link.href)}
+                  className="text-lg font-body text-foreground hover:text-accent transition-colors text-left"
                 >
                   {link.label}
-                </a>
+                </button>
               ))}
+              <button
+                onClick={() => navigate("/book")}
+                className="mt-4 flex items-center gap-2 bg-accent text-accent-foreground px-5 py-3 rounded-lg font-body text-sm uppercase tracking-wider hover:bg-accent/90 transition-colors"
+              >
+                <CalendarCheck className="w-4 h-4" />
+                Book Appointment
+              </button>
             </nav>
           </SheetContent>
         </Sheet>
 
         {/* Logo */}
-        <a href="#hero" className="font-heading text-2xl md:text-3xl tracking-wide text-foreground">
+        <button onClick={() => navigate("/")} className="font-heading text-2xl md:text-3xl tracking-wide text-foreground">
           Ivy Salon
-        </a>
+        </button>
 
         {/* Icons */}
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate("/book")}
+            className="hidden md:inline-flex items-center gap-2 bg-accent text-accent-foreground px-5 py-2 rounded-md font-body text-xs uppercase tracking-widest hover:bg-accent/90 transition-colors"
+          >
+            <CalendarCheck className="w-4 h-4" />
+            Book Now
+          </button>
           <button aria-label="Search" className="p-1">
             <Search className="h-5 w-5 text-foreground" />
           </button>
